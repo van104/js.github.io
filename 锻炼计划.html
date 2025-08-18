@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智能健身倒计时</title>
+    <link rel="icon" href="https://clockcn.com/favicon.ico" type="image/x-icon">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#2563EB',
+                        workout: '#059669',
+                        rest: '#D97706',
+                        dark: '#111827',
+                        light: '#F3F4F6'
+                    },
+                    fontFamily: {
+                        inter: ['Inter', 'system-ui', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .timer-pulse { animation: none; }
+        @keyframes pulse { 50% { transform: scale(1.08); } }
+        .final-countdown { animation: finalCountdown 1s ease-in-out infinite; }
+        @keyframes finalCountdown { 50% { transform: scale(1.15); opacity: 0.9; } }
+        .card-shadow { box-shadow: 0 12px 30px -8px rgba(0,0,0,0.1); }
+        .status-badge { transition: all 0.3s ease; }
+    </style>
+</head>
+<body class="font-inter bg-gradient-to-br from-light to-slate-100 min-h-screen flex items-center justify-center p-4 text-dark">
+    <div class="max-w-2xl w-full">
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-extrabold text-primary mb-3">训练助手</h1>
+            <p class="text-slate-600">循环训练模式（共4轮）</p>
+        </div>
+        <div id="timer-card" class="bg-white/90 backdrop-blur-lg rounded-3xl p-10 card-shadow">
+            <div class="flex flex-col gap-4 mb-6">
+                <div class="text-center status-badge">
+                    <span id="cycle-counter" class="px-5 py-2 rounded-full bg-primary/10 text-primary font-semibold text-lg">循环 1/4</span>
+                </div>
+                <div class="text-center">
+                    <h2 id="status-text" class="text-2xl font-bold text-workout">准备开始训练</h2>
+                </div>
+            </div>
+            <div class="text-center mb-10">
+                <div id="display-area" class="text-7xl font-black text-workout timer-pulse">点击开始</div>
+            </div>
+            <div class="flex flex-col gap-3 max-w-sm mx-auto">
+                <button id="start-btn" class="bg-primary hover:bg-primary/90 text-white py-4 rounded-full flex items-center justify-center gap-2">
+                    <i class="fa fa-play fa-lg"></i>
+                    <span class="text-lg font-medium">开始训练</span>
+                </button>
+                <button id="reset-btn" class="bg-slate-200 hover:bg-slate-300 text-slate-800 py-4 rounded-full flex items-center justify-center gap-2">
+                    <i class="fa fa-refresh fa-lg"></i>
+                    <span class="text-lg font-medium">重置训练</span>
+                </button>
+            </div>
+            <div id="message" class="mt-6 text-center text-slate-600 text-base">提示：可使用空格键控制开始/完成，R键重置</div>
+        </div>
+    </div>
+    <script>
+        const appState = {
+            totalCycles: 4,
+            workoutDuration: 60,
+            restDuration: 60,
+            currentCycle: 1,
+            isRunning: false,
+            isResting: false,
+            timer: null,
+  audioInstance: null,
+            seconds: 60
+        };
+
+        const dom = {
+            startBtn: document.getElementById('start-btn'),
+            resetBtn: document.getElementById('reset-btn'),
+            displayArea: document.getElementById('display-area'),
+            statusText: document.getElementById('status-text'),
+            cycleCounter: document.getElementById('cycle-counter'),
+            message: document.getElementById('message'),
+            timerCard: document.getElementById('timer-card')
+        };
+
+        function updateDisplay() {
+            if (appState.isResting) {
+                const mins = Math.floor(appState.seconds / 60);
+                const secs = appState.seconds % 60;
+                dom.displayArea.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        dom.displayArea.classList.toggle('final-countdown', appState.seconds <= 10);
+        document.title = `00:${appState.seconds} - 健身倒计时`;
+            } else {
+                dom.displayArea.textContent = '锻炼中';
+        document.title = `锻炼中 - 智能健身倒计时`;
+            }
+        }
+
+        function updateCycleCounter() {
+            dom.cycleCounter.textContent = `循环 ${appState.currentCycle}/${appState.totalCycles}`;
+            dom.cycleCounter.classList.toggle('bg-primary/10', !appState.isResting);
+            dom.cycleCounter.classList.toggle('bg-rest/10', appState.isResting);
+        }
+
+        function startWorkout() {
+            appState.isRunning = true;
+            appState.isResting = false;
+            dom.statusText.textContent = '锻炼进行中';
+            dom.statusText.classList = 'text-2xl font-bold text-workout';
+            dom.displayArea.textContent = '锻炼中';
+            dom.displayArea.classList = 'text-7xl font-black text-workout timer-pulse';
+            dom.timerCard.classList = 'bg-white/90 backdrop-blur-lg rounded-3xl p-10 card-shadow border-2 border-workout/20';
+            dom.message.textContent = '专注锻炼，完成后点击按钮进入休息';
+            dom.startBtn.innerHTML = '<i class="fa fa-flag-checkered fa-lg"></i><span class="text-lg font-medium">完成锻炼</span>';
+            updateCycleCounter();
+
+            // 锻炼阶段不启用倒计时，由用户主动点击完成
+            if (appState.timer) clearInterval(appState.timer);
+        }
+        
+
+        function switchToRest() {
+            appState.isRunning = false;
+            appState.isResting = true;
+            // 前3次休息60秒，第4次休息90秒
+            appState.seconds = appState.currentCycle === 4 ? 90 : 60;
+            dom.statusText.textContent = '休息恢复中';
+            dom.statusText.classList = 'text-2xl font-bold text-rest';
+            dom.displayArea.classList = 'text-7xl font-black text-rest timer-pulse';
+            dom.timerCard.classList = 'bg-white/90 backdrop-blur-lg rounded-3xl p-10 card-shadow border-2 border-rest/20';
+            dom.message.textContent = '适当休息，准备下一轮训练';
+            dom.startBtn.innerHTML = '<i class="fa fa-clock-o fa-lg"></i><span class="text-lg font-medium">休息计时中</span>';
+            dom.startBtn.disabled = true;
+
+            appState.timer = setInterval(() => {
+                if (appState.seconds <= 0) {
+                    clearInterval(appState.timer);
+                    // 创建循环音频实例并播放
+    appState.audioInstance = new Audio('https://clockcn.com/sound/xylophone.mp3');
+    appState.audioInstance.loop = true;
+    appState.audioInstance.play();
+                    handleCycleCompletion();
+                    return;
+                }
+                appState.seconds--;
+                updateDisplay();
+            }, 1000);
+        }
+
+        function handleCycleCompletion() {
+            if (appState.currentCycle < appState.totalCycles) {
+                appState.currentCycle++;
+                dom.statusText.textContent = '休息结束';
+                dom.displayArea.textContent = '点击开始';
+                dom.displayArea.classList = 'text-7xl font-black text-workout';
+                dom.message.textContent = '已完成当前轮次，点击开始下一轮训练';
+                dom.startBtn.innerHTML = '<i class="fa fa-play fa-lg"></i><span class="text-lg font-medium">开始下一轮</span>';
+                dom.startBtn.disabled = false;
+                appState.isRunning = false;
+                appState.isResting = false;
+            } else {
+                completeAllCycles();
+            }
+        }
+
+        function completeAllCycles() {
+            clearInterval(appState.timer);
+            appState.isRunning = false;
+            appState.isResting = false;
+            dom.statusText.textContent = '训练完成！';
+            dom.statusText.classList = 'text-2xl font-bold text-primary';
+            dom.displayArea.textContent = '恭喜完成';
+            dom.displayArea.classList = 'text-7xl font-black text-primary';
+            dom.timerCard.classList = 'bg-white/90 backdrop-blur-lg rounded-3xl p-10 card-shadow border-2 border-primary/20';
+            dom.message.textContent = '您已完成所有3轮科学训练，今天的锻炼很出色！';
+            dom.startBtn.innerHTML = '<i class="fa fa-play fa-lg"></i><span class="text-lg font-medium">重新开始训练</span>';
+            dom.startBtn.disabled = false;
+            appState.currentCycle = 1;
+            updateCycleCounter();
+        }
+
+        function resetApp() {
+            clearInterval(appState.timer);
+            appState.currentCycle = 1;
+            appState.isRunning = false;
+            appState.isResting = false;
+            appState.seconds = appState.workoutDuration;
+            dom.displayArea.textContent = '点击开始';
+            dom.displayArea.classList = 'text-7xl font-black text-workout';
+            dom.statusText.textContent = '准备开始训练';
+            dom.statusText.classList = 'text-2xl font-bold text-workout';
+            dom.timerCard.classList = 'bg-white/90 backdrop-blur-lg rounded-3xl p-10 card-shadow';
+            dom.startBtn.innerHTML = '<i class="fa fa-play fa-lg"></i><span class="text-lg font-medium">开始训练</span>';
+            dom.startBtn.disabled = false;
+            dom.message.textContent = '提示：可使用空格键控制开始/完成，R键重置';
+            updateCycleCounter();
+        }
+
+        dom.startBtn.addEventListener('click', () => {
+            if (!appState.isRunning && !appState.isResting) {
+                // 停止当前播放的音频
+    if (appState.audioInstance) {
+      appState.audioInstance.pause();
+      appState.audioInstance = null;
+    }
+    startWorkout();
+            } else if (appState.isRunning && !appState.isResting) {
+                clearInterval(appState.timer);
+                switchToRest();
+            }
+        });
+
+        dom.resetBtn.addEventListener('click', resetApp);
+
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space') {
+                e.preventDefault();
+                dom.startBtn.click();
+            }
+            if (e.key.toLowerCase() === 'r') {
+                dom.resetBtn.click();
+            }
+        });
+    </script>
+</body>
+</html>
