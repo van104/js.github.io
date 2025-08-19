@@ -4,6 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>智能健身倒计时</title>
+    <!-- PWA配置 -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2563EB">
+    <!-- 苹果设备支持 -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="https://clockcn.com/favicon.ico">
     <link rel="icon" href="https://clockcn.com/favicon.ico" type="image/x-icon">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
@@ -32,6 +39,20 @@
         @keyframes finalCountdown { 50% { transform: scale(1.15); opacity: 0.9; } }
         .card-shadow { box-shadow: 0 12px 30px -8px rgba(0,0,0,0.1); }
         .status-badge { transition: all 0.3s ease; }
+        /* 按钮交互动画 */
+        .btn-click { transition: all 0.15s ease; }
+        .btn-click:active {
+            transform: scale(0.95);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        .btn-bounce {
+            animation: bounce 0.3s ease;
+        }
+        @keyframes bounce {
+            0% { transform: scale(1); }
+            50% { transform: scale(0.95); }
+            100% { transform: scale(1); }
+        }
     </style>
 </head>
 <body class="font-inter bg-gradient-to-br from-light to-slate-100 min-h-screen flex items-center justify-center p-4 text-dark">
@@ -53,11 +74,11 @@
                 <div id="display-area" class="text-7xl font-black text-workout timer-pulse">点击开始</div>
             </div>
             <div class="flex flex-col gap-3 max-w-sm mx-auto">
-                <button id="start-btn" class="bg-primary hover:bg-primary/90 text-white py-4 rounded-full flex items-center justify-center gap-2">
+                <button id="start-btn" class="bg-primary hover:bg-primary/90 text-white py-4 rounded-full flex items-center justify-center gap-2 btn-click">
                     <i class="fa fa-play fa-lg"></i>
                     <span class="text-lg font-medium">开始训练</span>
                 </button>
-                <button id="reset-btn" class="bg-slate-200 hover:bg-slate-300 text-slate-800 py-4 rounded-full flex items-center justify-center gap-2">
+                <button id="reset-btn" class="bg-slate-200 hover:bg-slate-300 text-slate-800 py-4 rounded-full flex items-center justify-center gap-2 btn-click">
                     <i class="fa fa-refresh fa-lg"></i>
                     <span class="text-lg font-medium">重置训练</span>
                 </button>
@@ -74,7 +95,8 @@
             isRunning: false,
             isResting: false,
             timer: null,
-  audioInstance: null,
+            audioInstance: null,
+            clickSound: new Audio('down_fail.mp3'),
             seconds: 60
         };
 
@@ -140,7 +162,7 @@
             appState.timer = setInterval(() => {
                 if (appState.seconds <= 0) {
                     clearInterval(appState.timer);
-                    // 创建循环音频实例并播放
+                    // 创建循环音频实例并播放 - 使用在线MP3
     appState.audioInstance = new Audio('https://clockcn.com/sound/xylophone.mp3');
     appState.audioInstance.loop = true;
     appState.audioInstance.play();
@@ -186,6 +208,11 @@
 
         function resetApp() {
             clearInterval(appState.timer);
+            // 停止当前播放的音频
+            if (appState.audioInstance) {
+                appState.audioInstance.pause();
+                appState.audioInstance = null;
+            }
             appState.currentCycle = 1;
             appState.isRunning = false;
             appState.isResting = false;
@@ -202,20 +229,42 @@
         }
 
         dom.startBtn.addEventListener('click', () => {
+            // 播放点击声音
+            appState.clickSound.currentTime = 0;
+            appState.clickSound.play();
+            
+            // 添加按钮动画
+            dom.startBtn.classList.add('btn-bounce');
+            setTimeout(() => {
+                dom.startBtn.classList.remove('btn-bounce');
+            }, 300);
+            
             if (!appState.isRunning && !appState.isResting) {
                 // 停止当前播放的音频
-    if (appState.audioInstance) {
-      appState.audioInstance.pause();
-      appState.audioInstance = null;
-    }
-    startWorkout();
+                if (appState.audioInstance) {
+                    appState.audioInstance.pause();
+                    appState.audioInstance = null;
+                }
+                startWorkout();
             } else if (appState.isRunning && !appState.isResting) {
                 clearInterval(appState.timer);
                 switchToRest();
             }
         });
 
-        dom.resetBtn.addEventListener('click', resetApp);
+        dom.resetBtn.addEventListener('click', () => {
+            // 播放点击声音
+            appState.clickSound.currentTime = 0;
+            appState.clickSound.play();
+            
+            // 添加按钮动画
+            dom.resetBtn.classList.add('btn-bounce');
+            setTimeout(() => {
+                dom.resetBtn.classList.remove('btn-bounce');
+            }, 300);
+            
+            resetApp();
+        });
 
         document.addEventListener('keydown', (e) => {
             if (e.code === 'Space') {
@@ -226,6 +275,20 @@
                 dom.resetBtn.click();
             }
         });
+    </script>
+    <!-- 注册Service Worker -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('service-worker.js')
+            .then((registration) => {
+              console.log('ServiceWorker registration successful with scope: ', registration.scope);
+            })
+            .catch((error) => {
+              console.log('ServiceWorker registration failed: ', error);
+            });
+        });
+      }
     </script>
 </body>
 </html>
