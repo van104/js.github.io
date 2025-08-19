@@ -1,7 +1,7 @@
 // 定义缓存名称和版本
 const CACHE_NAME = 'fitness-app-v1';
 const ASSETS_TO_CACHE = [
-  '锻炼助手.html',
+  'index.html',
   'down_fail.mp3',
   'manifest.json',
   'https://cdn.tailwindcss.com',
