@@ -59,24 +59,14 @@
     <div class="max-w-2xl w-full">
         <div class="text-center mb-8">
             <h1 class="text-3xl font-extrabold text-primary mb-3">训练助手</h1>
+            <p class="text-slate-600">循环训练模式（共4轮）</p>
             <!-- 功能切换标签 -->
             <div class="flex justify-center mt-6 border-b border-slate-200 max-w-md mx-auto">
                 <button id="workout-tab" class="px-6 py-2 font-medium text-primary border-b-2 border-primary">锻炼模式</button>
                 <button id="timer-tab" class="px-6 py-2 font-medium text-slate-500 hover:text-slate-700">独立计时</button>
             </div>
-            <p class="text-slate-600">循环训练模式（共4轮）</p>
-            <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-md mx-auto">
-                <div class="flex flex-col items-start gap-1 px-4">
-                    <label for="workout-time" class="text-sm font-medium text-slate-700">锻炼时间（秒）</label>
-                    <input type="number" id="workout-time" min="10" max="300" value="60" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary">
-                </div>
-                <div class="flex flex-col items-start gap-1 px-4">
-                    <label for="rest-time" class="text-sm font-medium text-slate-700">休息时间（秒）</label>
-                    <input type="number" id="rest-time" min="10" max="180" value="60" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary">
-                </div>
-            </div>
         </div>
-        <div id="workout-mode" class="block">
+        <div id="workout-mode" class="block mb-8">
         <div id="timer-card" class="bg-white/90 backdrop-blur-lg rounded-3xl p-10 card-shadow">
             <div class="flex flex-col gap-4 mb-6">
                 <div class="text-center status-badge">
@@ -87,8 +77,8 @@
                 </div>
             </div>
             <div class="text-center mb-10">
-                <div id="display-area" class="text-7xl font-black text-workout timer-pulse">点击开始</div>
-            </div>
+                <div id="display-area" class="text-[3rem] font-black text-workout timer-pulse">点击开始</div>
+              </div>
             <div class="flex flex-col gap-3 max-w-sm mx-auto">
                 <button id="start-btn" class="bg-primary hover:bg-primary/90 text-white py-4 rounded-full flex items-center justify-center gap-2 btn-click">
                     <i class="fa fa-play fa-lg"></i>
@@ -102,111 +92,52 @@
             <div id="message" class="mt-6 text-center text-slate-600 text-base">提示：可使用空格键控制开始/完成，R键重置</div>
         </div>
     </div>
-    </div>
-
-    <!-- 独立倒计时区域 -->
-    <div id="timer-mode" class="hidden mt-8 max-w-2xl w-full">
-        <div class="bg-white/90 backdrop-blur-lg rounded-3xl p-6 card-shadow">
-            <h2 class="text-2xl font-bold text-primary mb-4 text-center">独立倒计时</h2>
-            <div class="text-center mb-4">
-                <div id="new-timer-display" class="text-5xl font-black text-primary">01:00</div>
+    <!-- 独立计时模式 -->
+    <div id="timer-mode" class="hidden mb-8">
+        <div id="independent-timer-card" class="bg-white/90 backdrop-blur-lg rounded-3xl p-10 card-shadow border-2 border-primary/20">
+            <div class="text-center mb-6">
+                <h2 class="text-2xl font-bold text-primary">独立倒计时</h2>
             </div>
-            <div class="flex gap-3 max-w-sm mx-auto">
-                <input type="number" id="new-timer-input" min="10" max="300" value="60" class="flex-1 px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary">
-                <button id="new-timer-start" class="bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-lg flex items-center justify-center gap-1 btn-click">
-                    <i class="fa fa-play"></i> 开始
+            <div class="flex flex-col items-center gap-4 mb-6">
+                <div class="w-full max-w-xs">
+                    <label for="timer-input" class="block text-left text-slate-600 mb-2">设置倒计时时间（秒）</label>
+                    <input
+                        type="number"
+                        id="timer-input"
+                        min="10"
+                        max="300"
+                        value="60"
+                        class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary"
+                    >
+                </div>
+                <div id="timer-display" class="text-7xl font-black text-primary timer-pulse">01:00</div>
+                <div id="timer-message" class="text-slate-600 text-base">提示：可设置10-300秒的倒计时</div>
+            </div>
+            <div class="flex flex-col gap-3 max-w-sm mx-auto">
+                <button id="timer-start-btn" class="bg-primary hover:bg-primary/90 text-white py-4 rounded-full flex items-center justify-center gap-2 btn-click">
+                    <i class="fa fa-play fa-lg"></i>
+                    <span class="text-lg font-medium">开始计时</span>
                 </button>
-                <button id="new-timer-reset" class="bg-slate-200 hover:bg-slate-300 text-slate-800 px-4 py-2 rounded-lg flex items-center justify-center gap-1 btn-click">
-                    <i class="fa fa-refresh"></i> 重置
+                <button id="timer-reset-btn" class="bg-slate-200 hover:bg-slate-300 text-slate-800 py-4 rounded-full flex items-center justify-center gap-2 btn-click">
+                    <i class="fa fa-refresh fa-lg"></i>
+                    <span class="text-lg font-medium">重置计时</span>
                 </button>
             </div>
         </div>
     </div>
     <script>
-        // 获取DOM元素
-        const workoutTimeInput = document.getElementById('workout-time');
-        const restTimeInput = document.getElementById('rest-time');
-
-        // 模式切换DOM元素
-        const workoutTab = document.getElementById('workout-tab');
-        const timerTab = document.getElementById('timer-tab');
-        const workoutMode = document.getElementById('workout-mode');
-        const timerMode = document.getElementById('timer-mode');
-
-        // 独立倒计时DOM元素
-        const newTimerInput = document.getElementById('new-timer-input');
-        const newTimerDisplay = document.getElementById('new-timer-display');
-        const newTimerStartBtn = document.getElementById('new-timer-start');
-        const newTimerResetBtn = document.getElementById('new-timer-reset');
-
         const appState = {
             totalCycles: 4,
-            workoutDuration: parseInt(workoutTimeInput.value),
-            restDuration: parseInt(restTimeInput.value),
+            workoutDuration: 60,
+            restDuration: 60,
             currentCycle: 1,
             isRunning: false,
             isResting: false,
             timer: null,
             audioInstance: null,
             clickSound: new Audio('down_fail.mp3'),
-            seconds: parseInt(workoutTimeInput.value)
+            seconds: 60
         };
-
-        // 独立倒计时状态
-        const newTimerState = {
-            seconds: parseInt(newTimerInput.value),
-            isRunning: false,
-            timer: null,
-            endSound: new Audio('https://clockcn.com/sound/xylophone.mp3')
-        };
-
-        // 标签切换逻辑
-        function switchToWorkoutMode() {
-            workoutMode.classList.remove('hidden');
-            workoutMode.classList.add('block');
-            timerMode.classList.remove('block');
-            timerMode.classList.add('hidden');
-            workoutTab.classList.add('text-primary', 'border-primary');
-            workoutTab.classList.remove('text-slate-500');
-            timerTab.classList.add('text-slate-500');
-            timerTab.classList.remove('text-primary', 'border-primary');
-        }
-
-        function switchToTimerMode() {
-            workoutMode.classList.remove('block');
-            workoutMode.classList.add('hidden');
-            timerMode.classList.remove('hidden');
-            timerMode.classList.add('block');
-            workoutTab.classList.add('text-slate-500');
-            workoutTab.classList.remove('text-primary', 'border-primary');
-            timerTab.classList.add('text-primary', 'border-primary');
-            timerTab.classList.remove('text-slate-500');
-        }
-
-        // 标签点击事件
-        workoutTab.addEventListener('click', () => {
-            switchToWorkoutMode();
-            appState.clickSound.currentTime = 0;
-            appState.clickSound.play();
-        });
-
-        timerTab.addEventListener('click', () => {
-            switchToTimerMode();
-            appState.clickSound.currentTime = 0;
-            appState.clickSound.play();
-        });
-
-        // 监听时间输入变化
-        workoutTimeInput.addEventListener('change', () => {
-            appState.workoutDuration = parseInt(workoutTimeInput.value);
-            if (!appState.isRunning && !appState.isResting) {
-                appState.seconds = appState.workoutDuration;
-            }
-        });
-
-        restTimeInput.addEventListener('change', () => {
-            appState.restDuration = parseInt(restTimeInput.value);
-        });
 
         const dom = {
             startBtn: document.getElementById('start-btn'),
@@ -257,8 +188,8 @@
         function switchToRest() {
             appState.isRunning = false;
             appState.isResting = true;
-            // 前3次休息使用用户设置的时间，第4次休息增加30秒
-            appState.seconds = appState.currentCycle === 4 ? appState.restDuration + 30 : appState.restDuration;
+            // 前3次休息60秒，第4次休息90秒
+            appState.seconds = appState.currentCycle === 4 ? 90 : 60;
             dom.statusText.textContent = '休息恢复中';
             dom.statusText.classList = 'text-2xl font-bold text-rest';
             dom.displayArea.classList = 'text-7xl font-black text-rest timer-pulse';
@@ -324,9 +255,6 @@
             appState.currentCycle = 1;
             appState.isRunning = false;
             appState.isResting = false;
-            // 重置为用户设置的锻炼时间
-            appState.workoutDuration = parseInt(workoutTimeInput.value);
-            appState.restDuration = parseInt(restTimeInput.value);
             appState.seconds = appState.workoutDuration;
             dom.displayArea.textContent = '点击开始';
             dom.displayArea.classList = 'text-7xl font-black text-workout';
@@ -377,93 +305,171 @@
             resetApp();
         });
 
-        // 独立倒计时函数
-        function updateNewTimerDisplay() {
-            const mins = Math.floor(newTimerState.seconds / 60);
-            const secs = newTimerState.seconds % 60;
-            newTimerDisplay.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-        }
+        // 独立计时器状态
+        const timerState = {
+            isRunning: false,
+            seconds: 60,
+            timer: null,
+            endSound: null
+        };
 
-        function startNewTimer() {
-            if (newTimerState.isRunning) {
-                // 暂停倒计时
-                clearInterval(newTimerState.timer);
-                newTimerState.isRunning = false;
-                newTimerStartBtn.innerHTML = '<i class="fa fa-play"></i> 继续';
-            } else {
-                // 开始或继续倒计时
-                newTimerState.isRunning = true;
-                newTimerStartBtn.innerHTML = '<i class="fa fa-pause"></i> 暂停';
-                newTimerStartBtn.disabled = true;
-                newTimerInput.disabled = true;
-
-                appState.clickSound.currentTime = 0;
-                appState.clickSound.play();
-
-                newTimerState.timer = setInterval(() => {
-                    if (newTimerState.seconds <= 0) {
-                        clearInterval(newTimerState.timer);
-                        newTimerState.isRunning = false;
-                        newTimerStartBtn.innerHTML = '<i class="fa fa-play"></i> 开始';
-                        newTimerStartBtn.disabled = false;
-                        newTimerInput.disabled = false;
-
-                        // 播放结束声音
-                        newTimerState.endSound.currentTime = 0;
-                        newTimerState.endSound.play();
-                        return;
-                    }
-                    newTimerState.seconds--;
-                    updateNewTimerDisplay();
-                }, 1000);
+        // 初始化音频对象
+        function initTimerAudio() {
+            if (!timerState.endSound) {
+                timerState.endSound = new Audio('https://clockcn.com/sound/xylophone.mp3');
+                timerState.endSound.loop = true; // 设置循环播放
+                timerState.endSound.addEventListener('error', function() {
+                    console.error('无法加载倒计时结束声音');
+                    timerDom.timerMessage.textContent = '提示：无法加载倒计时结束声音';
+                });
             }
         }
 
-        function resetNewTimer() {
-            clearInterval(newTimerState.timer);
-            newTimerState.isRunning = false;
-            newTimerState.seconds = parseInt(newTimerInput.value);
-            updateNewTimerDisplay();
-            newTimerStartBtn.innerHTML = '<i class="fa fa-play"></i> 开始';
-            newTimerStartBtn.disabled = false;
-            newTimerInput.disabled = false;
+        // 独立计时器DOM元素
+        const timerDom = {
+            workoutTab: document.getElementById('workout-tab'),
+            timerTab: document.getElementById('timer-tab'),
+            workoutMode: document.getElementById('workout-mode'),
+            timerMode: document.getElementById('timer-mode'),
+            timerInput: document.getElementById('timer-input'),
+            timerDisplay: document.getElementById('timer-display'),
+            timerStartBtn: document.getElementById('timer-start-btn'),
+            timerResetBtn: document.getElementById('timer-reset-btn'),
+            timerMessage: document.getElementById('timer-message')
+        };
+
+        // 更新独立计时器显示
+        function updateTimerDisplay() {
+            const mins = Math.floor(timerState.seconds / 60);
+            const secs = timerState.seconds % 60;
+            timerDom.timerDisplay.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            timerDom.timerDisplay.classList.toggle('final-countdown', timerState.seconds <= 10);
+            document.title = `倒计时 ${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        // 开始独立计时
+        function startTimer() {
+            if (timerState.isRunning) {
+                // 暂停计时
+                clearInterval(timerState.timer);
+                timerState.isRunning = false;
+                timerDom.timerStartBtn.innerHTML = '<i class="fa fa-play fa-lg"></i><span class="text-lg font-medium">继续计时</span>';
+                timerDom.timerMessage.textContent = '计时已暂停，点击继续';
+                return;
+            }
+
+            // 开始或继续计时
+            timerState.isRunning = true;
+            timerDom.timerStartBtn.innerHTML = '<i class="fa fa-pause fa-lg"></i><span class="text-lg font-medium">暂停计时</span>';
+            timerDom.timerMessage.textContent = '计时进行中...';
+            timerDom.timerInput.disabled = true;
+
+            // 初始化音频（确保在用户交互上下文中）
+            initTimerAudio();
+
+            // 播放点击声音
+            appState.clickSound.currentTime = 0;
+            appState.clickSound.play();
+            timerDom.timerStartBtn.classList.add('btn-bounce');
+            setTimeout(() => {
+                timerDom.timerStartBtn.classList.remove('btn-bounce');
+            }, 300);
+
+            timerState.timer = setInterval(() => {
+                if (timerState.seconds <= 0) {
+                    clearInterval(timerState.timer);
+                    timerState.isRunning = false;
+                    timerDom.timerStartBtn.innerHTML = '<i class="fa fa-play fa-lg"></i><span class="text-lg font-medium">重新开始</span>';
+                    timerDom.timerMessage.textContent = '倒计时结束！';
+                    timerDom.timerInput.disabled = false;
+
+                    // 播放结束声音
+                    initTimerAudio();
+                    if (timerState.endSound) {
+                        timerState.endSound.currentTime = 0;
+                        // 确保在用户交互上下文中播放音频
+                        timerState.endSound.play().catch(error => {
+                            console.error('播放失败:', error);
+                            timerDom.timerMessage.textContent = '倒计时结束！(声音播放失败)';
+                        });
+                    } else {
+                        timerDom.timerMessage.textContent = '倒计时结束！(无法播放声音)';
+                    }
+                    return;
+                }
+                timerState.seconds--;
+                updateTimerDisplay();
+            }, 1000);
+        }
+
+        // 重置独立计时器
+        function resetTimer() {
+            clearInterval(timerState.timer);
+            timerState.isRunning = false;
+            timerState.seconds = parseInt(timerDom.timerInput.value);
+            updateTimerDisplay();
+            timerDom.timerStartBtn.innerHTML = '<i class="fa fa-play fa-lg"></i><span class="text-lg font-medium">开始计时</span>';
+            timerDom.timerStartBtn.disabled = false;
+            timerDom.timerInput.disabled = false;
+            timerDom.timerMessage.textContent = '提示：可设置10-300秒的倒计时';
 
             // 停止声音
-            if (newTimerState.endSound) {
-                newTimerState.endSound.pause();
-                newTimerState.endSound.currentTime = 0;
+            if (timerState.endSound) {
+                timerState.endSound.pause();
+                timerState.endSound.currentTime = 0;
             }
 
+            // 播放点击声音
+            appState.clickSound.currentTime = 0;
+            appState.clickSound.play();
+            timerDom.timerResetBtn.classList.add('btn-bounce');
+            setTimeout(() => {
+                timerDom.timerResetBtn.classList.remove('btn-bounce');
+            }, 300);
+        }
+
+        // 切换模式
+        function switchMode(mode) {
+            if (mode === 'workout') {
+                timerDom.workoutMode.classList.remove('hidden');
+                timerDom.workoutMode.classList.add('block');
+                timerDom.timerMode.classList.remove('block');
+                timerDom.timerMode.classList.add('hidden');
+                timerDom.workoutTab.classList.add('text-primary', 'border-b-2', 'border-primary');
+                timerDom.workoutTab.classList.remove('text-slate-500');
+                timerDom.timerTab.classList.add('text-slate-500');
+                timerDom.timerTab.classList.remove('text-primary', 'border-b-2', 'border-primary');
+                document.title = '智能健身倒计时';
+            } else {
+                timerDom.workoutMode.classList.remove('block');
+                timerDom.workoutMode.classList.add('hidden');
+                timerDom.timerMode.classList.remove('hidden');
+                timerDom.timerMode.classList.add('block');
+                timerDom.workoutTab.classList.add('text-slate-500');
+                timerDom.workoutTab.classList.remove('text-primary', 'border-b-2', 'border-primary');
+                timerDom.timerTab.classList.add('text-primary', 'border-b-2', 'border-primary');
+                timerDom.timerTab.classList.remove('text-slate-500');
+                updateTimerDisplay();
+            }
+            // 播放点击声音
             appState.clickSound.currentTime = 0;
             appState.clickSound.play();
         }
 
-        // 独立倒计时事件监听
-        newTimerStartBtn.addEventListener('click', () => {
-            newTimerStartBtn.classList.add('btn-bounce');
-            setTimeout(() => {
-                newTimerStartBtn.classList.remove('btn-bounce');
-            }, 300);
-            startNewTimer();
-        });
-
-        newTimerResetBtn.addEventListener('click', () => {
-            newTimerResetBtn.classList.add('btn-bounce');
-            setTimeout(() => {
-                newTimerResetBtn.classList.remove('btn-bounce');
-            }, 300);
-            resetNewTimer();
-        });
-
-        newTimerInput.addEventListener('change', () => {
-            if (!newTimerState.isRunning) {
-                newTimerState.seconds = parseInt(newTimerInput.value);
-                updateNewTimerDisplay();
+        // 事件监听
+        timerDom.workoutTab.addEventListener('click', () => switchMode('workout'));
+        timerDom.timerTab.addEventListener('click', () => switchMode('timer'));
+        timerDom.timerStartBtn.addEventListener('click', startTimer);
+        timerDom.timerResetBtn.addEventListener('click', resetTimer);
+        timerDom.timerInput.addEventListener('change', () => {
+            if (!timerState.isRunning) {
+                timerState.seconds = parseInt(timerDom.timerInput.value);
+                updateTimerDisplay();
             }
         });
 
-        // 初始化独立倒计时显示
-        updateNewTimerDisplay();
+        // 初始化独立计时器显示
+        updateTimerDisplay();
 
         document.addEventListener('keydown', (e) => {
             if (e.code === 'Space') {
@@ -489,5 +495,33 @@
         });
       }
     </script>
+
+    <!-- 独立倒计时区域 -->
+    <div id="timer-mode" class="hidden mb-8">
+        <div class="bg-white/90 backdrop-blur-lg rounded-3xl p-10 card-shadow max-w-md mx-auto w-full">
+            <div class="text-center mb-6">
+                <h2 class="text-2xl font-bold text-primary mb-3">独立计时器</h2>
+                <p class="text-slate-600">自定义倒计时时间</p>
+            </div>
+            <div class="flex flex-col items-center gap-6 mb-8">
+                <div class="w-full max-w-xs">
+                    <label for="timer-input" class="block text-sm font-medium text-slate-700 mb-1">设置时间（秒）</label>
+                    <input type="number" id="timer-input" min="10" max="300" value="60" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary text-center text-xl">
+                </div>
+                <div id="timer-display" class="text-7xl font-black text-primary timer-pulse">01:00</div>
+            </div>
+            <div class="flex flex-col gap-3 max-w-sm mx-auto">
+                <button id="timer-start-btn" class="bg-primary hover:bg-primary/90 text-white py-4 rounded-full flex items-center justify-center gap-2 btn-click">
+                    <i class="fa fa-play fa-lg"></i>
+                    <span class="text-lg font-medium">开始计时</span>
+                </button>
+                <button id="timer-reset-btn" class="bg-slate-200 hover:bg-slate-300 text-slate-800 py-4 rounded-full flex items-center justify-center gap-2 btn-click">
+                    <i class="fa fa-refresh fa-lg"></i>
+                    <span class="text-lg font-medium">重置计时</span>
+                </button>
+            </div>
+            <div id="timer-message" class="mt-6 text-center text-slate-600 text-base">提示：可设置10-300秒的倒计时</div>
+        </div>
+    </div>
 </body>
 </html>
