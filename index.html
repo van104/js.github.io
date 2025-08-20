@@ -165,7 +165,7 @@
                 const secs = appState.seconds % 60;
                 dom.displayArea.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
         dom.displayArea.classList.toggle('final-countdown', appState.seconds <= 10);
-        document.title = `00:${appState.seconds} - 健身倒计时`;
+        document.title = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')} - 健身倒计时`;
             } else {
                 dom.displayArea.textContent = '锻炼中';
         document.title = `锻炼中 - 智能健身倒计时`;
