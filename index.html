@@ -259,9 +259,13 @@
 
             appState.timer = setInterval(() => {
                 if (appState.seconds <= 0) {
-                   appState.audioInstance = new Audio('https://clockcn.com/sound/xylophone.mp3');
-                    appState.audioInstance.loop = true;
-                    appState.audioInstance.play(); clearInterval(appState.timer);
+                    clearInterval(appState.timer);
+                    // 停止任何正在播放的音频
+                    if (appState.audioInstance) {
+                        appState.audioInstance.pause();
+                        appState.audioInstance = null;
+                    }
+                    // 创建新的音频实例并播放
                     appState.audioInstance = new Audio('https://clockcn.com/sound/xylophone.mp3');
                     appState.audioInstance.loop = true;
                     appState.audioInstance.play();
