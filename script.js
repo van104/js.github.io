@@ -32,7 +32,7 @@ const appState = {
     isResting: false,
     timer: null,
     audioInstance: null,
-    clickSound: new Audio('/MP3/down_fail.mp3'),
+    clickSound: new Audio('MP3/down_fail.mp3'),
     seconds: 60,
 
     currentExerciseIndex: 0,
