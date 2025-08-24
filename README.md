@@ -26,10 +26,10 @@
 ### 安装步骤
 ```bash
 # 克隆仓库
-git clone https://github.com/yourusername/countdown-no-alert.git
+git clone https://github.com/van104/js.github.io.git
 
 # 进入项目目录
-cd countdown-no-alert/v1
+cd js.github.io
 
 # 安装依赖（可选）
 npm install -g live-server
