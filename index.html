@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -221,6 +222,10 @@
             audioInstance: null,
             clickSound: new Audio('down_fail.mp3'),
             seconds: 60,
+
+            currentExerciseIndex: 0,
+            currentPlan: null,
+            exercises: []
         };
 
         const dom = {
@@ -251,19 +256,76 @@
             dom.cycleCounter.classList.toggle('bg-rest/10', appState.isResting);
         }
 
+        function getCurrentDay() {
+            const days = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+            const today = new Date();
+            return days[today.getDay()];
+        }
+
+        function getTodayPlan() {
+            const today = getCurrentDay();
+            if (today === '周日') {
+                return { isRestDay: true };
+            }
+            return trainingPlans.find(plan => plan.days && plan.days.includes(today)) || { isNoPlan: true };
+        }
+
+        function updateWorkoutModeHeader() {
+            const today = getCurrentDay();
+            const todayPlan = getTodayPlan();
+            
+            if (today === '周日') {
+                dom.statusText.textContent = '今天是放纵日！';
+                dom.statusText.classList = 'text-2xl font-bold text-primary';
+                dom.displayArea.textContent = '好好休息';
+                dom.startBtn.disabled = true;
+                dom.message.textContent = '今天是休息日，好好放松吧！';
+            } else if (todayPlan.isNoPlan) {
+                dom.statusText.textContent = '今天没有训练计划';
+                dom.statusText.classList = 'text-2xl font-bold text-slate-500';
+                dom.displayArea.textContent = '无计划';
+                dom.startBtn.disabled = true;
+                dom.message.textContent = '请先在训练计划中添加今天的训练内容';
+            } else {
+                dom.statusText.textContent = `${today} - ${todayPlan.title}`;
+                dom.statusText.classList = 'text-2xl font-bold text-primary';
+                dom.displayArea.textContent = '点击开始';
+                dom.startBtn.disabled = false;
+                dom.message.textContent = '提示：可使用空格键控制开始/完成，R键重置';
+            }
+        }
+
         function startWorkout() {
+            const todayPlan = getTodayPlan();
+            if (todayPlan.isRestDay || todayPlan.isNoPlan) return;
+
             appState.isRunning = true;
             appState.isResting = false;
-            dom.statusText.textContent = '锻炼进行中';
-            dom.statusText.classList = 'text-2xl font-bold text-workout';
-            dom.displayArea.textContent = '锻炼中';
-            dom.displayArea.classList = 'text-7xl font-black text-workout timer-pulse';
+            // 仅在首次开始训练时设置currentPlan和exercises
+            if (!appState.currentPlan) {
+                appState.currentPlan = todayPlan;
+                appState.exercises = todayPlan.exercises;
+                appState.currentExerciseIndex = 0;
+            }
+            // 如果是继续训练，则保持currentExerciseIndex不变
+
+            updateExerciseDisplay();
             dom.timerCard.classList = 'bg-white/90 backdrop-blur-lg rounded-3xl p-10 card-shadow border-2 border-workout/20';
             dom.message.textContent = '专注锻炼，完成后点击按钮进入休息';
             dom.startBtn.innerHTML = '<i class="fa fa-flag-checkered fa-lg"></i><span class="text-lg font-medium">完成锻炼</span>';
             updateCycleCounter();
 
             if (appState.timer) clearInterval(appState.timer);
+        }
+
+        function updateExerciseDisplay() {
+            if (!appState.currentPlan || appState.exercises.length === 0) return;
+
+            const currentExercise = appState.exercises[appState.currentExerciseIndex];
+            dom.statusText.textContent = `${getCurrentDay()} - ${appState.currentPlan.title} - ${currentExercise.name}`;
+            dom.statusText.classList = 'text-2xl font-bold text-workout';
+            dom.displayArea.textContent = '锻炼中';
+            dom.displayArea.classList = 'text-7xl font-black text-workout timer-pulse';
         }
 
         function switchToRest() {
@@ -274,7 +336,7 @@
             dom.statusText.classList = 'text-2xl font-bold text-rest';
             dom.displayArea.classList = 'text-7xl font-black text-rest timer-pulse';
             dom.timerCard.classList = 'bg-white/90 backdrop-blur-lg rounded-3xl p-10 card-shadow border-2 border-rest/20';
-            dom.message.textContent = '适当休息，准备下一轮训练';
+            dom.message.textContent = appState.currentCycle === 4 ? '当前工作已完成，准备下一个动作' : '适当休息，准备下一轮训练';
             dom.startBtn.innerHTML = '<i class="fa fa-clock-o fa-lg"></i><span class="text-lg font-medium">休息计时中</span>';
             dom.startBtn.disabled = true;
 
@@ -318,16 +380,31 @@
             clearInterval(appState.timer);
             appState.isRunning = false;
             appState.isResting = false;
-            dom.statusText.textContent = '训练完成！';
-            dom.statusText.classList = 'text-2xl font-bold text-primary';
-            dom.displayArea.textContent = '恭喜完成';
-            dom.displayArea.classList = 'text-7xl font-black text-primary';
-            dom.timerCard.classList = 'bg-white/90 backdrop-blur-lg rounded-3xl p-10 card-shadow border-2 border-primary/20';
-            dom.message.textContent = '您已完成所有4轮科学训练，今天的锻炼很出色！';
-            dom.startBtn.innerHTML = '<i class="fa fa-play fa-lg"></i><span class="text-lg font-medium">重新开始训练</span>';
-            dom.startBtn.disabled = false;
             appState.currentCycle = 1;
             updateCycleCounter();
+
+            // 检查是否有下一个动作
+            if (appState.currentExerciseIndex < appState.exercises.length - 1) {
+                appState.currentExerciseIndex++;
+                dom.statusText.textContent = `准备下一个动作: ${appState.exercises[appState.currentExerciseIndex].name}`;
+                dom.statusText.classList = 'text-2xl font-bold text-primary';
+                dom.displayArea.textContent = '点击开始';
+                dom.displayArea.classList = 'text-7xl font-black text-workout';
+                dom.timerCard.classList = 'bg-white/90 backdrop-blur-lg rounded-3xl p-10 card-shadow border-2 border-primary/20';
+                dom.message.textContent = '准备好后，点击开始按钮继续训练';
+                dom.startBtn.innerHTML = '<i class="fa fa-play fa-lg"></i><span class="text-lg font-medium">开始下一个</span>';
+                dom.startBtn.disabled = false;
+            } else {
+                // 所有动作都已完成
+                dom.statusText.textContent = '今天训练完成！';
+                dom.statusText.classList = 'text-2xl font-bold text-primary';
+                dom.displayArea.textContent = '🎉';
+                dom.displayArea.classList = 'text-7xl font-black text-primary';
+                dom.timerCard.classList = 'bg-white/90 backdrop-blur-lg rounded-3xl p-10 card-shadow border-2 border-primary/20';
+                dom.message.textContent = '恭喜你完成了今天的所有训练！';
+                dom.startBtn.innerHTML = '<i class="fa fa-refresh fa-lg"></i><span class="text-lg font-medium">重新开始</span>';
+                dom.startBtn.disabled = false;
+            }
         }
 
         function resetApp() {
@@ -411,11 +488,12 @@
         let startTimer = null;
         let resetTimer = null;
         let switchMode = null;
+        let trainingPlans = [];
 
         // 确保DOM加载完成后再获取元素
         document.addEventListener('DOMContentLoaded', function() {
             // 从localStorage加载训练计划数据
-            let trainingPlans = JSON.parse(localStorage.getItem('trainingPlans')) || [
+            trainingPlans = JSON.parse(localStorage.getItem('trainingPlans')) || [
                 {
                     id: 'plan1',
                     date: '2023-10-23',
@@ -1142,6 +1220,8 @@
             updateTimerDisplay();
             // 渲染训练计划
             renderTrainingPlans();
+            // 初始化锻炼模式头部显示
+            updateWorkoutModeHeader();
         });
 
         document.addEventListener('keydown', (e) => {
