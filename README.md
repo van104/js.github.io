@@ -1,6 +1,6 @@
 # 智能健身倒计时助手
 
-![Demo截图](https://via.placeholder.com/800x500.png?text=Demo+Preview)
+![Demo截图](./MP3/屏幕截图(2).png)
 
 ## 功能特性
 
