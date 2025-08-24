@@ -1,0 +1,93 @@
+.timer-pulse {
+    animation: none;
+}
+
+@keyframes pulse {
+    50% {
+        transform: scale(1.08);
+    }
+}
+
+.card-shadow {
+    box-shadow: 0 12px 30px -8px rgba(0, 0, 0, 0.1);
+}
+
+.status-badge {
+    transition: all 0.3s ease;
+}
+
+/* 按钮交互动画 */
+.btn-click {
+    transition: all 0.15s ease;
+}
+
+.btn-click:active {
+    transform: scale(0.95);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.btn-bounce {
+    animation: bounce 0.3s ease;
+}
+
+@keyframes bounce {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(0.95);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* 模式切换过渡动画 - 加快了速度 */
+.mode-container {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.mode-enter {
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+.mode-enter-active {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.mode-exit {
+    opacity: 1;
+}
+
+.mode-exit-active {
+    opacity: 0;
+    transform: translateY(-20px);
+}
+
+
+
+.hidden {
+    display: none !important;
+}
+
+.launch-btn {
+    padding: 8px 16px;
+    font-size: 14px;
+    background-color: #c20c0c;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.launch-btn:hover {
+    background-color: #9e0909;
+}
